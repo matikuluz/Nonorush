@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    function authed() { return request.auth != null; }
+
+    match /users/{uid} {
+      allow read: if true;
+      allow create: if authed() && request.auth.uid == uid;
+      allow update: if authed() && request.auth.uid == uid
+        && request.resource.data.rating == resource.data.rating
+        && request.resource.data.gamesPlayed == resource.data.gamesPlayed;
+      allow delete: if false;
+    }
+
+    match /matches/{matchId} {
+      allow read: if true;
+      allow create, delete: if false;
+      allow update: if authed()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["results"])
+        && request.auth.uid in resource.data.players
+        && (!("results" in resource.data) || !(request.auth.uid in resource.data.results));
+    }
+
+    match /puzzles/{id} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "nonorush",
+  "private": true,
+  "scripts": {
+    "dev:web": "npm --prefix apps/web run dev",
+    "build:web": "npm --prefix apps/web run build",
+    "preview:web": "npm --prefix apps/web run preview",
+    "emulators": "firebase emulators:start",
+    "dev": "concurrently -k \"npm:dev:web\" \"npm:emulators\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
